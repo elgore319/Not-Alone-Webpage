@@ -1,6 +1,6 @@
-# Belay download page
+# Tethered download page
 
-This repo hosts the download page for Belay, the co-op mod for White Knuckle, on GitHub Pages at the custom domain in `CNAME`.
+This repo hosts the download page for Tethered, the co-op mod for White Knuckle, on GitHub Pages at the custom domain in `CNAME`.
 
 | Path | What it does |
 | --- | --- |
