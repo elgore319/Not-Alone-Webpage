@@ -148,8 +148,9 @@
 
   /* changelog: a logbook hung on a rope, pitons for entries */
   .log { position: relative; padding-left: 40px; display: grid; gap: 14px; }
-  .log::before { content: ""; position: absolute; left: 13px; top: 8px; bottom: 8px; width: 5px; border-radius: 3px;
-    background: repeating-linear-gradient(-55deg, #c79a5a 0 4px, #8a5a2a 4px 8px); opacity: .7; }
+  .log::before { content: ""; position: absolute; left: 12px; top: 8px; bottom: 8px; width: 8px;
+    background: linear-gradient(90deg, rgba(0,0,0,.45), transparent 35%, rgba(255,255,255,.06) 60%, rgba(0,0,0,.5)), url("rope.png") 0 0 / 16px 64px repeat-y;
+    image-rendering: pixelated; }
   .release { position: relative; background: linear-gradient(180deg, #1d1a16, #171511); border: 1px solid #000; border-left: 3px solid var(--seam); padding: 16px 20px; }
   .release::before { content: ""; position: absolute; left: -34px; top: 20px; width: 16px; height: 8px; background: linear-gradient(#a59b8e, #5c544a); border: 1px solid #000; border-radius: 0 4px 4px 0; }
   .release:first-child { border-left-color: var(--sodium); }
@@ -278,8 +279,13 @@
     </div>
     <div class="hang sway">
       <svg class="rope" viewBox="0 0 18 160" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
-        <defs><pattern id="weave" width="6" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)"><rect width="6" height="8" fill="#8a5a2a"/><rect width="3" height="8" fill="#c79a5a"/></pattern></defs>
-        <rect x="6" y="6" width="6" height="136" fill="url(#weave)"/>
+        <defs>
+          <!-- rope.png is the in-game rope texture (Belay's RopeLook): 8 texels round, 32 along, drawn 2px per texel -->
+          <pattern id="weave" x="5" y="0" width="16" height="64" patternUnits="userSpaceOnUse"><image href="rope.png" width="16" height="64" style="image-rendering: pixelated"/></pattern>
+          <linearGradient id="round" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".45"/><stop offset=".35" stop-color="#000" stop-opacity="0"/><stop offset=".6" stop-color="#fff" stop-opacity=".08"/><stop offset="1" stop-color="#000" stop-opacity=".5"/></linearGradient>
+        </defs>
+        <rect x="5" y="6" width="8" height="136" fill="url(#weave)"/>
+        <rect x="5" y="6" width="8" height="136" fill="url(#round)"/>
         <rect x="1" y="0" width="16" height="10" rx="2" fill="#5c544a" stroke="#000"/><circle cx="9" cy="5" r="2.2" fill="#a59b8e"/>
         <path d="M3 142h12v8a6 6 0 0 1-12 0z" fill="none" stroke="#a59b8e" stroke-width="2.5"/>
       </svg>
