@@ -5,130 +5,258 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Belay: co-op for White Knuckle</title>
 <meta name="description" content="Belay is a free co-op mod for White Knuckle. Climb the tower with up to 8 friends, roped together.">
+<meta name="theme-color" content="#0e0d0b">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tinkerwithwandsanywhere.com/">
 <meta property="og:title" content="Belay: co-op for White Knuckle">
 <meta property="og:description" content="Climb the tower with up to 8 friends, roped together. Free mod, one-click installer.">
-<meta property="og:image" content="climber.png">
+<meta property="og:image" content="https://tinkerwithwandsanywhere.com/climber.png">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230e0d0b'/%3E%3Crect x='9' y='3' width='14' height='26' rx='7' fill='none' stroke='%23d9822b' stroke-width='3.5'/%3E%3Cpath d='M23 11l-6 9' stroke='%23f2a93b' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@700;900&family=Big+Shoulders+Display:wght@600;800&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #14161b;
-    --panel: #1c1f26;
-    --line: #2c3039;
-    --text: #e4e0d8;
-    --muted: #9a958c;
-    --rust: #c8743a;
-    --rust-hi: #e08a4a;
-    --hazard: #e3b23c;
-    --ok: #7fb36a;
-    --mono: ui-monospace, "Cascadia Mono", Consolas, "Courier New", monospace;
-    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --soot: #0e0d0b;
+    --wall: #171512;
+    --plate: #1f1c18;
+    --plate-hi: #2a2621;
+    --seam: #3a342c;
+    --bone: #ebe3d3;
+    --dust: #a39886;
+    --dim: #6f6658;
+    --rust: #b8562a;
+    --rust-hi: #d9822b;
+    --sodium: #f2a93b;
+    --goo: #2b0c0f;
+    --goo-hi: #6e1a1c;
+    --stencil: "Big Shoulders Stencil Display", "Impact", "Arial Narrow", sans-serif;
+    --display: "Big Shoulders Display", "Impact", "Arial Narrow", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, Consolas, "Courier New", monospace;
+    --mass: 18px;
   }
   * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   body {
-    margin: 0; background: var(--bg); color: var(--text);
-    font: 16px/1.55 var(--sans);
-    background-image:
-      linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
-    background-size: 48px 48px;
+    margin: 0; color: var(--bone); background-color: var(--soot);
+    font: 16px/1.6 var(--mono);
+    overflow-x: hidden;
   }
-  a { color: var(--rust-hi); }
-  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
-  .hazard { height: 8px; background: repeating-linear-gradient(135deg, var(--hazard) 0 14px, #111 14px 28px); opacity: .85; }
+  /* Concrete grain over everything, drawn once. */
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(1100px 620px at 78% -8%, rgba(242,169,59,.10), transparent 60%),
+      radial-gradient(700px 500px at 0% 40%, rgba(184,86,42,.05), transparent 70%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .95 0 0 0 0 .85 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+      var(--soot);
+  }
+  a { color: var(--sodium); text-underline-offset: 3px; }
+  a:hover { color: var(--bone); }
+  :focus-visible { outline: 2px solid var(--sodium); outline-offset: 3px; }
+  code { font: 600 .92em var(--mono); color: var(--bone); background: #0a0908; border: 1px solid var(--seam); padding: 0 5px; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px 0 72px; }
+  .hazard { height: 10px; background: repeating-linear-gradient(-45deg, var(--sodium) 0 12px, #15120e 12px 24px); }
 
-  header.top { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; }
-  .logo { font: 800 22px/1 var(--mono); letter-spacing: .32em; text-transform: uppercase; color: var(--text); text-decoration: none; }
-  .logo span { color: var(--rust); }
-  nav a { color: var(--muted); text-decoration: none; margin-left: 20px; font: 600 13px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
-  nav a:hover { color: var(--text); }
+  /* ---------- top bar ---------- */
+  header.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 0; }
+  .logo { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; color: var(--bone); }
+  .logo svg { width: 26px; height: 26px; flex: none; }
+  .logo b { font: 900 30px/1 var(--stencil); letter-spacing: .18em; text-transform: uppercase; }
+  nav { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  nav a { color: var(--dust); text-decoration: none; padding: 6px 10px; font: 600 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; border: 1px solid transparent; }
+  nav a:hover { color: var(--bone); border-color: var(--seam); }
 
-  .hero { display: grid; grid-template-columns: 1.25fr .75fr; gap: 32px; align-items: center; padding: 40px 0 56px; }
-  .eyebrow { font: 600 12px var(--mono); letter-spacing: .22em; text-transform: uppercase; color: var(--hazard); }
-  h1 { font: 800 clamp(40px, 7vw, 76px)/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; margin: 14px 0 18px; }
-  .lede { font-size: 19px; color: #cfcac1; max-width: 34em; margin: 0 0 28px; }
-  .cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  /* ---------- hero ---------- */
+  .hero { position: relative; display: grid; grid-template-columns: 1.3fr .7fr; gap: 24px; align-items: center; padding: 28px 0 88px; }
+  .tagline { display: inline-flex; gap: 10px; align-items: center; font: 600 12px var(--mono); letter-spacing: .24em; text-transform: uppercase; color: var(--sodium); }
+  .tagline::before { content: ""; width: 34px; height: 2px; background: var(--sodium); }
+  h1 {
+    font: 900 clamp(64px, 11.5vw, 148px)/.84 var(--stencil); text-transform: uppercase; letter-spacing: .01em;
+    margin: 18px 0 26px; color: var(--bone);
+    text-shadow: 0 2px 0 #000, 0 0 40px rgba(242,169,59,.08);
+  }
+  h1 .alone { color: var(--rust-hi); display: block; }
+  .lede { font: 400 17px/1.7 var(--mono); color: #d3c9b6; max-width: 36em; margin: 0 0 30px; }
+  .cta { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
   .btn {
-    display: inline-flex; align-items: center; gap: 10px; padding: 15px 22px;
-    font: 700 15px var(--mono); letter-spacing: .08em; text-transform: uppercase; text-decoration: none;
-    border: 2px solid var(--rust); color: #15110d; background: var(--rust);
-    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 12px; padding: 17px 26px 15px;
+    font: 800 22px/1 var(--display); letter-spacing: .1em; text-transform: uppercase; text-decoration: none;
+    color: #140d07; background: var(--sodium);
+    border: 0; box-shadow: inset 0 -4px 0 rgba(0,0,0,.28), 0 0 0 1px #000, 6px 6px 0 #000;
+    transition: transform .08s, box-shadow .08s, background .15s;
   }
-  .btn:hover { background: var(--rust-hi); border-color: var(--rust-hi); }
-  .btn.ghost { background: transparent; color: var(--text); border-color: var(--line); }
-  .btn.ghost:hover { border-color: var(--muted); }
-  .meta { margin-top: 14px; font: 13px var(--mono); color: var(--muted); }
-  .meta b { color: var(--text); font-weight: 600; }
-  .hero-img { justify-self: center; position: relative; }
-  .hero-img img { width: 100%; height: auto; max-width: 330px; display: block; -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%); }
+  .btn:hover { color: #140d07; background: #ffbe55; }
+  .btn:active { transform: translate(4px, 4px); box-shadow: inset 0 -4px 0 rgba(0,0,0,.28), 0 0 0 1px #000, 2px 2px 0 #000; }
+  .btn svg { width: 20px; height: 20px; flex: none; }
+  .btn.ghost { color: var(--bone); background: transparent; box-shadow: inset 0 0 0 2px var(--seam); }
+  .btn.ghost:hover { box-shadow: inset 0 0 0 2px var(--dust); }
+  .meta { margin-top: 18px; font: 13px var(--mono); color: var(--dust); }
+  .meta b { color: var(--bone); font-weight: 800; }
 
-  section { padding: 48px 0; border-top: 1px solid var(--line); }
-  h2 { font: 800 15px var(--mono); letter-spacing: .26em; text-transform: uppercase; color: var(--muted); margin: 0 0 24px; }
-  h2::before { content: "// "; color: var(--rust); }
+  /* the climber hangs off a rope tied to the top of the page */
+  .hang { position: relative; justify-self: center; width: 100%; max-width: 320px; padding-top: 120px; }
+  .hang .rope { position: absolute; left: 50%; top: -20px; width: 18px; height: 160px; transform: translateX(-50%); transform-origin: 50% 0; }
+  .hang img { position: relative; width: 100%; height: auto; display: block; filter: contrast(1.05) saturate(.9);
+    -webkit-mask-image: radial-gradient(ellipse 52% 50% at 50% 50%, #000 64%, transparent 100%); mask-image: radial-gradient(ellipse 52% 50% at 50% 50%, #000 64%, transparent 100%); }
+  .sway { animation: sway 7s ease-in-out infinite; transform-origin: 50% -20px; }
+  @keyframes sway { 0%,100% { transform: rotate(-1.6deg); } 50% { transform: rotate(1.6deg); } }
+  @media (prefers-reduced-motion: reduce) { .sway { animation: none; } }
 
-  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-  .card { background: var(--panel); border: 1px solid var(--line); padding: 20px; }
-  .card h3 { margin: 0 0 6px; font: 700 15px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
-  .card p { margin: 0; color: #bdb8af; font-size: 15px; }
+  /* ---------- segments ---------- */
+  section { position: relative; padding: 72px 0; }
+  section + section { border-top: 1px solid var(--seam); }
+  .seg-head { display: grid; grid-template-columns: auto 1fr; gap: 6px 22px; align-items: end; margin-bottom: 36px; }
+  .seg-no { grid-row: span 2; font: 900 92px/.8 var(--stencil); color: transparent; -webkit-text-stroke: 2px var(--seam); }
+  .seg-label { font: 600 11px var(--mono); letter-spacing: .3em; text-transform: uppercase; color: var(--rust-hi); }
+  h2 { margin: 0; font: 800 clamp(34px, 5vw, 52px)/.95 var(--display); text-transform: uppercase; letter-spacing: .03em; color: var(--bone); }
 
-  ol.steps { list-style: none; padding: 0; margin: 0; counter-reset: s; display: grid; gap: 12px; }
-  ol.steps li { counter-increment: s; display: grid; grid-template-columns: 44px 1fr; gap: 14px; background: var(--panel); border: 1px solid var(--line); padding: 16px 18px; }
-  ol.steps li::before { content: counter(s, decimal-leading-zero); font: 800 20px var(--mono); color: var(--rust); }
-  ol.steps p { margin: 0; color: #bdb8af; }
-  ol.steps strong { color: var(--text); }
-  kbd { font: 600 13px var(--mono); background: #0e0f12; border: 1px solid var(--line); border-bottom-width: 2px; padding: 1px 6px; color: var(--text); }
+  /* riveted steel plates */
+  .plates { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .plate {
+    --r: radial-gradient(circle at center, #5b5146 0 2px, #0b0a09 2.6px 3.4px, transparent 4px);
+    position: relative; padding: 26px 24px 24px;
+    background:
+      var(--r) 10px 10px / 8px 8px no-repeat, var(--r) calc(100% - 10px) 10px / 8px 8px no-repeat,
+      var(--r) 10px calc(100% - 10px) / 8px 8px no-repeat, var(--r) calc(100% - 10px) calc(100% - 10px) / 8px 8px no-repeat,
+      linear-gradient(180deg, var(--plate-hi), var(--plate) 40%, #1a1714);
+    border: 1px solid #000; box-shadow: inset 0 1px 0 rgba(255,255,255,.05), inset 0 0 0 1px rgba(255,255,255,.02);
+  }
+  .plate .code { font: 600 11px var(--mono); letter-spacing: .2em; color: var(--dim); }
+  .plate h3 { margin: 8px 0 8px; font: 800 26px/1 var(--display); text-transform: uppercase; letter-spacing: .04em; color: var(--bone); }
+  .plate p { margin: 0; font-size: 14px; line-height: 1.65; color: #c2b7a4; }
+  .plate.warn { border-top: 3px solid var(--rust); }
+  kbd { display: inline-block; min-width: 1.9em; text-align: center; font: 800 12px/1 var(--mono); padding: 5px 6px 4px; color: var(--bone);
+    background: linear-gradient(#2d2924, #1b1916); border: 1px solid #000; border-bottom-width: 3px; border-radius: 3px; box-shadow: inset 0 1px 0 rgba(255,255,255,.08); }
 
-  .keys { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin-top: 18px; }
-  .keys div { color: #bdb8af; font-size: 15px; }
+  /* install as a ladder: two rails, steps are rungs */
+  .ladder { position: relative; list-style: none; margin: 0; padding: 0 0 0 64px; counter-reset: s; }
+  .ladder::before, .ladder::after { content: ""; position: absolute; top: 0; bottom: 0; width: 6px; background: linear-gradient(90deg, #4a4037, #2a241f); border: 1px solid #000; }
+  .ladder::before { left: 6px; }
+  .ladder::after { left: 38px; }
+  .ladder li { position: relative; counter-increment: s; padding: 18px 0 18px 26px; }
+  .ladder li::before { content: ""; position: absolute; left: -58px; top: 32px; width: 32px; height: 7px; background: linear-gradient(#6b5d50, #3a322b); border: 1px solid #000; }
+  .ladder li::after { content: counter(s, decimal-leading-zero); position: absolute; left: 0; top: 14px; font: 900 38px/1 var(--stencil); color: var(--rust-hi); }
+  .ladder li p { margin: 0 0 0 46px; color: #c2b7a4; max-width: 46em; }
+  .ladder strong { display: block; color: var(--bone); font: 800 22px/1.1 var(--display); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; }
 
-  .changes { display: grid; gap: 12px; }
-  .release { background: var(--panel); border: 1px solid var(--line); padding: 18px 20px; }
-  .release header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
-  .release .v { font: 800 17px var(--mono); }
-  .release .d { font: 13px var(--mono); color: var(--muted); }
-  .tag { font: 700 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--hazard); border: 1px solid #6b5520; padding: 1px 6px; margin-left: 8px; vertical-align: middle; }
-  .release header:last-child { margin-bottom: 0; }
-  .release .body { color: #bdb8af; font-size: 15px; }
-  .release .body ul { margin: 6px 0; padding-left: 20px; }
-  .release .body h4 { margin: 10px 0 2px; font: 700 13px var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--text); }
+  .keys { display: flex; flex-wrap: wrap; gap: 10px 26px; margin: 34px 0 0; padding: 18px 20px; background: #0b0a09; border: 1px dashed var(--seam); }
+  .keys div { font-size: 14px; color: #c2b7a4; display: flex; align-items: center; gap: 10px; }
+  .aside { margin-top: 20px; font-size: 14px; color: var(--dust); max-width: 60em; }
+
+  /* changelog: a logbook hung on a rope, pitons for entries */
+  .log { position: relative; padding-left: 40px; display: grid; gap: 14px; }
+  .log::before { content: ""; position: absolute; left: 13px; top: 8px; bottom: 8px; width: 5px; border-radius: 3px;
+    background: repeating-linear-gradient(-55deg, #c79a5a 0 4px, #8a5a2a 4px 8px); opacity: .7; }
+  .release { position: relative; background: linear-gradient(180deg, #1d1a16, #171511); border: 1px solid #000; border-left: 3px solid var(--seam); padding: 16px 20px; }
+  .release::before { content: ""; position: absolute; left: -34px; top: 20px; width: 16px; height: 8px; background: linear-gradient(#a59b8e, #5c544a); border: 1px solid #000; border-radius: 0 4px 4px 0; }
+  .release:first-child { border-left-color: var(--sodium); }
+  .release header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .release .v { font: 800 24px/1 var(--display); letter-spacing: .04em; }
+  .release .d { font: 12px var(--mono); color: var(--dim); letter-spacing: .08em; text-transform: uppercase; }
+  .new { font: 800 10px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: #140d07; background: var(--sodium); padding: 3px 6px 2px; margin-left: 10px; vertical-align: 4px; }
+  .tag { font: 800 10px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--sodium); border: 1px solid #6b5520; padding: 2px 6px; margin-left: 10px; vertical-align: 4px; }
+  .release .body { color: #c2b7a4; font-size: 14px; margin-top: 10px; }
+  .release .body ul { margin: 6px 0; padding-left: 18px; }
+  .release .body li { margin: 6px 0; }
+  .release .body li::marker { color: var(--rust-hi); }
+  .release .body strong { color: var(--bone); }
+  .release .body h4 { margin: 12px 0 2px; font: 800 12px var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--bone); }
   .release .body p { margin: 6px 0; }
   details.release summary { cursor: pointer; list-style: none; }
   details.release summary::-webkit-details-marker { display: none; }
-  .muted { color: var(--muted); }
+  details.release summary .v::after { content: " +"; color: var(--dim); }
+  details.release[open] summary .v::after { content: " \2212"; }
+  .muted { color: var(--dust); }
 
-  .faq details { background: var(--panel); border: 1px solid var(--line); padding: 14px 18px; margin-bottom: 10px; }
-  .faq summary { cursor: pointer; font-weight: 600; }
-  .faq p { color: #bdb8af; margin: 10px 0 0; }
-
-  .support { display: grid; grid-template-columns: 1.3fr .7fr; gap: 24px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--rust); padding: 24px; }
+  /* support */
+  .support { display: grid; grid-template-columns: 1.3fr .7fr; gap: 28px; align-items: center; padding: 30px; background: linear-gradient(180deg, var(--plate-hi), var(--plate)); border: 1px solid #000; border-left: 6px solid var(--rust); }
   .support p { margin: 0 0 10px; }
-  .support-lede { font-size: 18px; color: #cfcac1; }
-  .support-links { display: grid; gap: 10px; }
-  .support-links .btn { justify-content: center; }
+  .support-lede { font-size: 17px; color: #d3c9b6; }
+  .support-links { display: grid; gap: 14px; }
 
-  footer { border-top: 1px solid var(--line); padding: 28px 0 40px; color: var(--muted); font-size: 13px; }
+  /* faq */
+  .faq details { border-bottom: 1px solid var(--seam); }
+  .faq details:first-of-type { border-top: 1px solid var(--seam); }
+  .faq summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 18px; padding: 18px 2px; font: 800 21px/1.2 var(--display); text-transform: uppercase; letter-spacing: .03em; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; color: var(--rust-hi); font: 800 22px/1 var(--mono); }
+  .faq details[open] summary::after { content: "\2212"; }
+  .faq summary:hover { color: var(--sodium); }
+  .faq p { color: #c2b7a4; margin: 0 0 20px; max-width: 52em; font-size: 15px; }
+
+  footer { border-top: 1px solid var(--seam); padding: 34px 0 110px; color: var(--dim); font-size: 13px; }
   footer p { margin: 6px 0; }
+  footer .logo b { font-size: 22px; }
+  footer a { color: var(--dust); }
 
-  @media (max-width: 760px) {
-    .hero { grid-template-columns: 1fr; padding-top: 16px; }
-    .hero-img { order: -1; }
-    .hero-img img { max-width: 160px; }
-    .grid { grid-template-columns: 1fr; }
-    .support { grid-template-columns: 1fr; }
-    nav a:not([href="#faq"]) { display: none; }
-    .lede { font-size: 17px; }
-    .btn { width: 100%; justify-content: center; }
+  /* ---------- altimeter (desktop) ---------- */
+  .alt { position: fixed; left: 18px; top: 50%; transform: translateY(-50%); height: 56vh; width: 30px; z-index: 5; pointer-events: none;
+    font: 600 10px var(--mono); color: var(--dim); letter-spacing: .1em; }
+  .alt .track { position: absolute; left: 12px; top: 0; bottom: 0; width: 6px;
+    background: repeating-linear-gradient(0deg, var(--seam) 0 1px, transparent 1px 12px), linear-gradient(90deg, transparent 2px, #2a251f 2px 4px, transparent 4px); }
+  .alt .mark { position: absolute; left: 4px; width: 22px; height: 3px; background: var(--sodium); box-shadow: 0 0 10px rgba(242,169,59,.6); bottom: 0; }
+  .alt .read { position: absolute; left: 0; top: -36px; white-space: nowrap; writing-mode: vertical-rl; transform: rotate(180deg); color: var(--dust); }
+  .alt .read b { color: var(--sodium); font-weight: 800; }
+
+  /* ---------- the mass ---------- */
+  .mass { position: fixed; left: 0; right: 0; bottom: 0; height: var(--mass); z-index: 4; pointer-events: none;
+    background: linear-gradient(180deg, var(--goo-hi), var(--goo) 30%, #120405); transition: height .5s ease-out; }
+  .mass svg { position: absolute; left: 0; bottom: 100%; width: 200%; height: 22px; display: block; animation: ooze 14s linear infinite; }
+  @keyframes ooze { to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .mass svg { animation: none; } .mass { transition: none; } }
+
+  @media (max-width: 900px) {
+    .wrap { padding: 0 20px; }
+    .alt { display: none; }
+    .plates { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 680px) {
+    header.top { padding: 16px 0; }
+    nav a:not([href="#install"]):not([href="#faq"]) { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 0 0 56px; }
+    .hang { order: -1; max-width: 170px; padding-top: 30px; }
+    .hang .rope { top: -10px; height: 46px; }
+    .sway { transform-origin: 50% -10px; }
+    h1 { margin-top: 12px; }
+    .lede { font-size: 15px; }
+    .btn { width: 100%; }
+    .plates { grid-template-columns: 1fr; }
+    .seg-no { font-size: 64px; }
+    .support { grid-template-columns: 1fr; padding: 22px; }
+    section { padding: 56px 0; }
+    .ladder { padding-left: 52px; }
+    .ladder::after { left: 30px; }
+    .ladder li::before { left: -46px; width: 24px; }
+    .ladder li { padding-top: 50px; padding-left: 14px; }
+    .ladder li p { margin-left: 0; }
+    .ladder li::after { font-size: 30px; top: 16px; left: 14px; }
+    .ladder li::before { top: 28px; }
+    .faq summary { font-size: 19px; }
   }
 </style>
 </head>
 <body>
 <div class="hazard"></div>
+
+<div class="alt" aria-hidden="true">
+  <div class="read">ALT <b id="alt-m">0000</b> M</div>
+  <div class="track"></div>
+  <div class="mark" id="alt-mark"></div>
+</div>
+
 <div class="wrap">
   <header class="top">
-    <a class="logo" href="#">Bel<span>a</span>y</a>
+    <a class="logo" href="#" aria-label="Belay home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="9" y="3" width="14" height="26" rx="7" fill="none" stroke="#d9822b" stroke-width="3.5"/><path d="M23 11l-6 9" stroke="#f2a93b" stroke-width="3"/></svg>
+      <b>Belay</b>
+    </a>
     <nav>
       <a href="#features">Features</a>
       <a href="#install">Install</a>
-      <a href="#changes">Changelog</a>
+      <a href="#changes">Logbook</a>
       <a href="#faq">FAQ</a>
       <a href="#support" data-support-link hidden>Support</a>
     </nav>
@@ -136,60 +264,70 @@
 
   <div class="hero">
     <div>
-      <div class="eyebrow">Co-op mod for White Knuckle</div>
-      <h1>Don't climb alone.</h1>
-      <p class="lede">Belay puts up to 8 climbers in the same tower, roped together. One death goo, shared doors, revives at the terminals. Leave your team behind and you'll regret it.</p>
+      <div class="tagline">Co-op mod for White Knuckle</div>
+      <h1>Don't climb <span class="alone">alone.</span></h1>
+      <p class="lede">Up to 8 climbers in the same tower, roped together. One mass rising under all of you, doors that wait for the team, revives at the terminals. Leave someone behind and you'll be the one hanging.</p>
       <div class="cta">
-        <a class="btn" id="dl-installer" href="https://github.com/elgore319/Belay_Mod/releases/latest">Download for Windows</a>
+        <a class="btn" id="dl-installer" href="https://github.com/elgore319/Belay_Mod/releases/latest">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M9 2h2v9.2l3.3-3.3 1.4 1.4L10 15 4.3 9.3l1.4-1.4L9 11.2V2zM3 16h14v2H3z" fill="currentColor"/></svg>
+          <span>Download for Windows</span>
+        </a>
         <a class="btn ghost" href="#install">How to install</a>
       </div>
       <div class="meta" id="dl-meta">Free. Needs White Knuckle on Steam.</div>
     </div>
-    <div class="hero-img"><img src="climber.png" alt="A Belay climber hanging by one hand" width="390" height="590"></div>
+    <div class="hang sway">
+      <svg class="rope" viewBox="0 0 18 160" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+        <defs><pattern id="weave" width="6" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)"><rect width="6" height="8" fill="#8a5a2a"/><rect width="3" height="8" fill="#c79a5a"/></pattern></defs>
+        <rect x="6" y="6" width="6" height="136" fill="url(#weave)"/>
+        <rect x="1" y="0" width="16" height="10" rx="2" fill="#5c544a" stroke="#000"/><circle cx="9" cy="5" r="2.2" fill="#a59b8e"/>
+        <path d="M3 142h12v8a6 6 0 0 1-12 0z" fill="none" stroke="#a59b8e" stroke-width="2.5"/>
+      </svg>
+      <img src="climber.png" alt="A Belay climber hanging from a rope by one hand" width="390" height="590">
+    </div>
   </div>
 </div>
 
 <section id="features"><div class="wrap">
-  <h2>What you get</h2>
-  <div class="grid">
-    <div class="card"><h3>Up to 8 players</h3><p>Host a public, friends-only or private Steam lobby. Friends join through Steam invites, no port forwarding.</p></div>
-    <div class="card"><h3>Same tower</h3><p>The lobby shares one world seed, so everyone climbs the exact same level layout.</p></div>
-    <div class="card"><h3>The rope</h3><p>Optional rope between climbers. Hold <kbd>V</kbd> on a wall to haul up the teammate below you.</p></div>
-    <div class="card"><h3>One death goo</h3><p>The mass rises for everyone and chases whoever is lowest. Nobody gets to hang back.</p></div>
-    <div class="card"><h3>Shared doors</h3><p>When the first climber passes a door, a countdown starts. Then it shuts for the whole team.</p></div>
-    <div class="card"><h3>Revives</h3><p>Dead players spectate. A teammate can bring them back at a save terminal, or for free with a disk.</p></div>
-    <div class="card"><h3>Your own wallet</h3><p>Roaches are never shared. What you pick up is yours, and you pay for your own revives.</p></div>
-    <div class="card"><h3>Team votes</h3><p>Shortcuts need a vote at the shortcut terminal, so nobody splits the team on their own.</p></div>
-    <div class="card"><h3>Updates itself</h3><p>New versions download when the game starts and apply after a restart. The F7 menu also manages your other mods.</p></div>
+  <div class="seg-head"><div class="seg-no">01</div><div class="seg-label">Segment 01</div><h2>What you get</h2></div>
+  <div class="plates">
+    <div class="plate warn"><div class="code">BLY-01</div><h3>Up to 8 players</h3><p>Host a public, friends-only or private Steam lobby. Friends join through Steam invites. No port forwarding.</p></div>
+    <div class="plate"><div class="code">BLY-02</div><h3>Same tower</h3><p>Everyone climbs the same levels and gets the same world events and spawns. Enemies hunt whoever is nearest, not just the host.</p></div>
+    <div class="plate"><div class="code">BLY-03</div><h3>The rope</h3><p>An optional climbing rope ties the team together. It swings and catches on ledges. Grab it to climb toward a teammate, or hold <kbd>V</kbd> on a wall to haul up whoever is below.</p></div>
+    <div class="plate warn"><div class="code">BLY-04</div><h3>One mass</h3><p>The mass rises for everyone and chases whoever is lowest. Nobody gets to hang back.</p></div>
+    <div class="plate"><div class="code">BLY-05</div><h3>Doors wait</h3><p>A door that shuts behind you stays open until every living teammate is through. The elevator only leaves once the whole team is aboard.</p></div>
+    <div class="plate"><div class="code">BLY-06</div><h3>Revives</h3><p>Dead players spectate. A teammate brings them back at a terminal for a few roaches, or for free with a disk they're carrying.</p></div>
+    <div class="plate"><div class="code">BLY-07</div><h3>Your own wallet</h3><p>Roaches are never shared. What you pick up is yours, and you pay for your own revives.</p></div>
+    <div class="plate"><div class="code">BLY-08</div><h3>Team votes</h3><p>Shortcuts need a vote at the shortcut vote terminal. The losing path stays shut, so nobody splits the team.</p></div>
+    <div class="plate"><div class="code">BLY-09</div><h3>Updates itself</h3><p>New versions download when the game starts and apply after a restart. The Belay menu also turns your other mods on and off.</p></div>
   </div>
 </div></section>
 
 <section id="install"><div class="wrap">
-  <h2>Install</h2>
-  <ol class="steps">
-    <li><p><strong>Close White Knuckle</strong> and download the installer zip with the button above.</p></li>
-    <li><p><strong>Extract the whole zip</strong> anywhere (right-click, Extract All). Running it from inside the zip won't work.</p></li>
-    <li><p><strong>Double-click "Install Belay.bat".</strong> It finds your game through Steam and installs BepInEx (the mod loader) and Belay. If Windows says "Windows protected your PC", click More info, then Run anyway.</p></li>
-    <li><p><strong>Start the game</strong> and click "Belay (F7)" in the bottom right of the main menu. Host a lobby or join a friend's. Everyone needs the same Belay version.</p></li>
+  <div class="seg-head"><div class="seg-no">02</div><div class="seg-label">Segment 02</div><h2>Install</h2></div>
+  <ol class="ladder">
+    <li><p><strong>Close White Knuckle</strong>Then download the installer zip with the button at the top.</p></li>
+    <li><p><strong>Extract the whole zip</strong>Anywhere you like (right-click, Extract All). Running it from inside the zip won't work.</p></li>
+    <li><p><strong>Run "Install Belay.bat"</strong>It finds your game through Steam and installs BepInEx (the mod loader) and Belay. If Windows says "Windows protected your PC", click More info, then Run anyway.</p></li>
+    <li><p><strong>Start the game</strong>Click "Belay" in the bottom right of the main menu, or press <kbd>F7</kbd>. Host a lobby or join a friend's. Everyone needs the same Belay version.</p></li>
   </ol>
   <div class="keys">
     <div><kbd>F7</kbd> Belay menu</div>
     <div><kbd>V</kbd> haul up teammate (rope on)</div>
-    <div><kbd>Tab</kbd> switch spectate target</div>
-    <div><kbd>F1</kbd> / <kbd>F2</kbd> vote yes / no</div>
+    <div><kbd>Tab</kbd> switch who you spectate</div>
   </div>
-  <p class="muted" style="margin-top:18px">Already run BepInEx 5? Grab the <a id="dl-modonly" href="https://github.com/elgore319/Belay_Mod/releases/latest">mod-only zip</a> and drop <code>BepInEx\plugins\Belay\Belay.dll</code> into your game folder. To remove Belay, run "Uninstall Belay.bat". It leaves BepInEx and your other mods alone.</p>
+  <p class="aside">Already run BepInEx 5? Grab the <a id="dl-modonly" href="https://github.com/elgore319/Belay_Mod/releases/latest">mod-only zip</a> and put <code>BepInEx\plugins\Belay\Belay.dll</code> in your game folder. To remove Belay, run "Uninstall Belay.bat". It leaves BepInEx and your other mods alone.</p>
 </div></section>
 
 <section id="changes"><div class="wrap">
-  <h2>Changelog</h2>
-  <div class="changes" id="changes-list">
+  <div class="seg-head"><div class="seg-no">03</div><div class="seg-label">Segment 03</div><h2>Logbook</h2></div>
+  <div class="log" id="changes-list">
     <p class="muted">Loading releases... If this doesn't load, see <a href="https://github.com/elgore319/Belay_Mod/releases">all releases</a>.</p>
   </div>
 </div></section>
 
 <section id="support" hidden><div class="wrap">
-  <h2>Support Belay</h2>
+  <div class="seg-head"><div class="seg-no">04</div><div class="seg-label">Optional</div><h2>Support Belay</h2></div>
   <div class="support">
     <div>
       <p class="support-lede">Belay is free and always will be. If you're having fun with it, you can chip in to help us keep building it. Every bit goes into more time on the mod.</p>
@@ -200,7 +338,7 @@
 </div></section>
 
 <section id="faq" class="faq"><div class="wrap">
-  <h2>FAQ</h2>
+  <div class="seg-head"><div class="seg-no" id="faq-no">04</div><div class="seg-label">Before you climb</div><h2>FAQ</h2></div>
   <details><summary>Does everyone need to own White Knuckle?</summary><p>Yes. Belay is a mod for the Steam version of the game. It doesn't include or unlock the game.</p></details>
   <details><summary>Is it safe? Windows warned me about the installer.</summary><p>The warning appears for any new download that isn't code-signed. The installer is a plain script you can open in Notepad. It only touches your White Knuckle folder.</p></details>
   <details><summary>Will it break my saves?</summary><p>Solo play is unchanged. In a co-op lobby, runs use the host's progression and disk saves are switched off so the team can't desync.</p></details>
@@ -209,16 +347,20 @@
 </div></section>
 
 <footer><div class="wrap">
-  <p>Belay is free to download and play. See the <a href="LICENSE.txt">license</a> and <a href="THIRD-PARTY-NOTICES.txt">third-party notices</a>.</p>
+  <p><a class="logo" href="#"><b>Belay</b></a></p>
+  <p>Belay is free to download and play. See the <a href="LICENSE.txt">license</a>, the <a href="THIRD-PARTY-NOTICES.txt">third-party notices</a> and <a href="https://github.com/elgore319/Belay_Mod/releases">every release</a>.</p>
   <p>Belay is a fan-made mod. It isn't made, endorsed or supported by Dark Machine Games or DreadXP. White Knuckle is their game.</p>
 </div></footer>
-<div class="hazard"></div>
+
+<div class="mass" id="mass" aria-hidden="true">
+  <svg viewBox="0 0 400 22" preserveAspectRatio="none"><path d="M0 22V12c25 0 25-9 50-9s25 11 50 11 25-8 50-8 25 10 50 10 25-9 50-9 25 11 50 11 25-8 50-8 25 7 50 7v15z" fill="#6e1a1c"/><path d="M0 22v-6c20 0 30 4 50 4s30-7 50-7 30 6 50 6 30-5 50-5 30 6 50 6 30-7 50-7 30 5 50 5 30-2 50-2v6z" fill="#2b0c0f"/></svg>
+</div>
 
 <script>
 (function () {
   // Where releases come from. Change this in one place if it moves.
   var REPO = "elgore319/Belay_Mod";
-  var API = "https://api.github.com/repos/" + REPO + "/releases?per_page=15";
+  var API = "https://api.github.com/repos/" + REPO + "/releases?per_page=12";
 
   function esc(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
@@ -268,6 +410,7 @@
       return '<a class="btn' + (i ? " ghost" : "") + '" href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.label) + "</a>";
     }).join("");
     document.getElementById("support").hidden = false;
+    document.getElementById("faq-no").textContent = "05";
     document.querySelectorAll("[data-support-link]").forEach(function (a) { a.hidden = false; });
   })();
 
@@ -281,21 +424,22 @@
       var ver = latest.tag_name.replace(/^v/i, "");
       if (inst) document.getElementById("dl-installer").href = inst;
       if (mod) document.getElementById("dl-modonly").href = mod;
-      document.getElementById("dl-installer").textContent = "Download Belay " + ver;
+      document.querySelector("#dl-installer span").textContent = "Download Belay " + ver;
       document.getElementById("dl-meta").innerHTML =
         "<b>v" + esc(ver) + "</b> &middot; " + esc(date(latest.published_at)) +
         (latest.prerelease ? " &middot; test build" : "") +
-        " &middot; Windows &middot; free";
+        " &middot; Windows &middot; free &middot; needs White Knuckle on Steam";
 
       var list = document.getElementById("changes-list");
       list.innerHTML = rels.map(function (r, i) {
         var head = '<header><span class="v">' + esc(r.tag_name) +
+          (i === 0 ? '<span class="new">Latest</span>' : "") +
           (r.prerelease ? '<span class="tag">test</span>' : "") +
           '</span><span class="d">' + esc(date(r.published_at)) + "</span></header>";
         var notes = md(r.body);
         if (!notes) return '<article class="release">' + head + "</article>";
         var body = '<div class="body">' + notes + "</div>";
-        return i < 3
+        return i < 2
           ? '<article class="release">' + head + body + "</article>"
           : '<details class="release"><summary>' + head + "</summary>" + body + "</details>";
       }).join("") +
@@ -303,8 +447,22 @@
     })
     .catch(function () {
       document.getElementById("changes-list").innerHTML =
-        '<p class="muted">Couldn\'t load the changelog right now. See <a href="https://github.com/' + REPO + '/releases">all releases</a>.</p>';
+        '<p class="muted">Couldn\'t load the logbook right now. See <a href="https://github.com/' + REPO + '/releases">all releases</a>.</p>';
     });
+
+  // Scrolling down the page is the climb: the altimeter counts up and the mass creeps after you.
+  var mark = document.getElementById("alt-mark"), read = document.getElementById("alt-m");
+  var root = document.documentElement, ticking = false;
+  function update() {
+    ticking = false;
+    var max = root.scrollHeight - innerHeight, f = max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0;
+    mark.style.bottom = (f * 100) + "%";
+    read.textContent = String(Math.round(f * 1200)).padStart(4, "0");
+    root.style.setProperty("--mass", Math.round(16 + f * 18) + "px");
+  }
+  addEventListener("scroll", function () { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+  addEventListener("resize", update);
+  update();
 })();
 </script>
 </body>
