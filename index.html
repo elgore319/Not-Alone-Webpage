@@ -96,6 +96,9 @@
   .btn.ghost:hover { box-shadow: inset 0 0 0 2px var(--dust); }
   .meta { margin-top: 18px; font: 13px var(--mono); color: var(--dust); }
   .meta b { color: var(--bone); font-weight: 800; }
+  .btn.soon { background: #3a342c; color: var(--dust); cursor: default; box-shadow: inset 0 -4px 0 rgba(0,0,0,.28), 0 0 0 1px #000, 6px 6px 0 #000; }
+  .btn.soon:hover { background: #3a342c; color: var(--dust); }
+  .btn.soon:active { transform: none; }
 
   /* the climber hangs off a rope tied to the top of the page */
   .hang { position: relative; justify-self: center; width: 100%; max-width: 320px; padding-top: 120px; }
@@ -293,13 +296,13 @@
       <h1>Don't climb <span class="alone">alone.</span></h1>
       <p class="lede">Up to 8 climbers in the same superstructure, roped together. One mass rising under all of you, doors that wait for the team, revives at the terminals. Leave someone behind and you'll be the one hanging.</p>
       <div class="cta">
-        <a class="btn" id="dl-installer" href="https://github.com/elgore319/Belay_Mod/releases/latest">
+        <a class="btn soon" id="dl-installer" aria-disabled="true">
           <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M9 2h2v9.2l3.3-3.3 1.4 1.4L10 15 4.3 9.3l1.4-1.4L9 11.2V2zM3 16h14v2H3z" fill="currentColor"/></svg>
-          <span>Download for Windows</span>
+          <span>Coming soon: v1.0.0</span>
         </a>
         <a class="btn ghost" href="#install">How to install</a>
       </div>
-      <div class="meta" id="dl-meta">Free. Needs White Knuckle on Steam.</div>
+      <div class="meta" id="dl-meta">The first release, <b>v1.0.0</b>, is on the way. Free &middot; Windows &middot; needs White Knuckle on Steam.</div>
     </div>
     <div class="hang sway">
       <svg class="rope" viewBox="0 0 18 160" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
@@ -346,13 +349,13 @@
     <div><kbd>V</kbd> haul up teammate (rope on)</div>
     <div><kbd>Tab</kbd> switch who you spectate</div>
   </div>
-  <p class="aside">Already run BepInEx 5? Grab the <a id="dl-modonly" href="https://github.com/elgore319/Belay_Mod/releases/latest">mod-only zip</a> and put <code>BepInEx\plugins\Belay\Belay.dll</code> in your game folder (the file keeps the mod's old name, Belay, so updates keep working). To remove Tethered, run "Uninstall Tethered.bat". It leaves BepInEx and your other mods alone.</p>
+  <p class="aside" id="modonly-note" hidden>Already run BepInEx 5? Grab the <a id="dl-modonly" href="#install">mod-only zip</a> and put <code>BepInEx\plugins\Belay\Belay.dll</code> in your game folder (the file keeps the mod's old name, Belay, so updates keep working). To remove Tethered, run "Uninstall Tethered.bat". It leaves BepInEx and your other mods alone.</p>
 </div></section>
 
 <section id="changes"><div class="wrap">
   <div class="seg-head"><div class="seg-no">03</div><div class="seg-label">Segment 03</div><h2>Logbook</h2></div>
   <div class="log" id="changes-list">
-    <p class="muted">Loading releases... If this doesn't load, see <a href="https://github.com/elgore319/Belay_Mod/releases">all releases</a>.</p>
+    <p class="muted">The logbook starts with v1.0.0. Check back soon.</p>
   </div>
 </div></section>
 
@@ -378,7 +381,7 @@
 
 <footer><div class="wrap">
   <p><a class="logo" href="#"><b>Tethered</b></a></p>
-  <p>Tethered (formerly Belay) is free to download and play. See the <a href="LICENSE.txt">license</a>, the <a href="THIRD-PARTY-NOTICES.txt">third-party notices</a> and <a href="https://github.com/elgore319/Belay_Mod/releases">every release</a>.</p>
+  <p>Tethered (formerly Belay) is free to download and play. See the <a href="LICENSE.txt">license</a> and the <a href="THIRD-PARTY-NOTICES.txt">third-party notices</a>.</p>
   <p>Tethered is a fan-made mod. It isn't made, endorsed or supported by Dark Machine Games or DreadXP. White Knuckle is their game.</p>
 </div></footer>
 
@@ -390,7 +393,12 @@
 (function () {
   // Where releases come from. Change this in one place if it moves.
   var REPO = "elgore319/Belay_Mod";
-  var API = "https://api.github.com/repos/" + REPO + "/releases?per_page=12";
+  var API = "https://api.github.com/repos/" + REPO + "/releases?per_page=30";
+  // Only public releases appear on the site: 1.0.0 and up, no test builds. The 0.x builds stay on GitHub for the updater.
+  function isPublic(r) {
+    var m = /^v?(\d+)\./.exec(r.tag_name || "");
+    return !r.draft && !r.prerelease && m && parseInt(m[1], 10) >= 1;
+  }
 
   function esc(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
@@ -447,8 +455,13 @@
   fetch(API, { headers: { Accept: "application/vnd.github+json" } })
     .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
     .then(function (rels) {
-      rels = rels.filter(function (r) { return !r.draft; });
-      if (!rels.length) throw new Error("none");
+      rels = rels.filter(isPublic).slice(0, 12);
+      if (!rels.length) return; // nothing public yet: keep the "coming soon" state
+      var btn = document.getElementById("dl-installer");
+      btn.classList.remove("soon");
+      btn.removeAttribute("aria-disabled");
+      btn.href = rels[0].html_url;
+      document.getElementById("modonly-note").hidden = false;
       var latest = rels[0];
       var inst = asset(latest, /-installer\.zip$/i), mod = asset(latest, /-mod-only\.zip$/i);
       var ver = latest.tag_name.replace(/^v/i, "");
@@ -457,14 +470,12 @@
       document.querySelector("#dl-installer span").textContent = "Download Tethered " + ver;
       document.getElementById("dl-meta").innerHTML =
         "<b>v" + esc(ver) + "</b> &middot; " + esc(date(latest.published_at)) +
-        (latest.prerelease ? " &middot; test build" : "") +
         " &middot; Windows &middot; free &middot; needs White Knuckle on Steam";
 
       var list = document.getElementById("changes-list");
       list.innerHTML = rels.map(function (r, i) {
         var head = '<header><span class="v">' + esc(r.tag_name) +
           (i === 0 ? '<span class="new">Latest</span>' : "") +
-          (r.prerelease ? '<span class="tag">test</span>' : "") +
           '</span><span class="d">' + esc(date(r.published_at)) + "</span></header>";
         var notes = md(r.body);
         if (!notes) return '<article class="release">' + head + "</article>";
@@ -472,13 +483,9 @@
         return i < 2
           ? '<article class="release">' + head + body + "</article>"
           : '<details class="release"><summary>' + head + "</summary>" + body + "</details>";
-      }).join("") +
-        '<p class="muted">Older versions: <a href="https://github.com/' + REPO + '/releases">all releases</a>.</p>';
+      }).join("");
     })
-    .catch(function () {
-      document.getElementById("changes-list").innerHTML =
-        '<p class="muted">Couldn\'t load the logbook right now. See <a href="https://github.com/' + REPO + '/releases">all releases</a>.</p>';
-    });
+    .catch(function () { /* keep the "coming soon" state */ });
 
   // Scrolling down the page is the climb: the altimeter counts up and the mass creeps after you.
   var mark = document.getElementById("alt-mark"), read = document.getElementById("alt-m");
