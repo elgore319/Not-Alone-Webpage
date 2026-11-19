@@ -10,8 +10,8 @@
 <meta property="og:url" content="https://tinkerwithwandsanywhere.com/">
 <meta property="og:title" content="Tethered: co-op for White Knuckle">
 <meta property="og:description" content="Climb the superstructure with up to 8 friends, roped together. Free mod, one-click installer.">
-<meta property="og:image" content="https://tinkerwithwandsanywhere.com/climber.png">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://tinkerwithwandsanywhere.com/cover.jpg">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230e0d0b'/%3E%3Crect x='9' y='3' width='14' height='26' rx='7' fill='none' stroke='%23d9822b' stroke-width='3.5'/%3E%3Cpath d='M23 11l-6 9' stroke='%23f2a93b' stroke-width='3'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -70,16 +70,19 @@
   nav a:hover { color: var(--bone); border-color: var(--seam); }
 
   /* ---------- hero ---------- */
-  .hero { position: relative; display: grid; grid-template-columns: 1.3fr .7fr; gap: 24px; align-items: center; padding: 28px 0 88px; }
+  .hero { position: relative; display: grid; grid-template-columns: 1.15fr .85fr; gap: 26px 44px; align-items: center; padding: 12px 0 88px; }
+  .hero .cover { grid-column: 1 / -1; order: -1; justify-self: center; width: min(calc(100% - 10px), calc(54vh * 16 / 9)); margin: 6px 5px 18px; }
+  .hero-copy .lede { margin-bottom: 26px; }
   .tagline { display: inline-flex; gap: 10px; align-items: center; font: 600 12px var(--mono); letter-spacing: .24em; text-transform: uppercase; color: var(--sodium); }
   .tagline::before { content: ""; width: 34px; height: 2px; background: var(--sodium); }
   h1 {
     /* Rough, scratched lettering in the spirit of the game's logo: a condensed face run through the #grit filter. */
-    font: 400 clamp(60px, 10.5vw, 136px)/.9 "Anton", "Impact", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: .01em;
+    font: 400 clamp(60px, 7.4vw, 104px)/.9 "Anton", "Impact", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: .01em;
     filter: url(#grit) drop-shadow(0 3px 0 #000);
     margin: 18px 0 26px; color: var(--bone);
   }
   h1 .alone { color: var(--rust-hi); display: block; }
+  h1 { white-space: nowrap; }
   .lede { font: 400 17px/1.7 var(--mono); color: #d3c9b6; max-width: 36em; margin: 0 0 30px; }
   .cta { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
   .btn {
@@ -100,14 +103,12 @@
   .btn.soon:hover { background: #3a342c; color: var(--dust); }
   .btn.soon:active { transform: none; }
 
-  /* the climber hangs off a rope tied to the top of the page */
-  .hang { position: relative; justify-self: center; width: 100%; max-width: 320px; padding-top: 120px; }
-  .hang .rope { position: absolute; left: 50%; top: -20px; width: 18px; height: 160px; transform: translateX(-50%); transform-origin: 50% 0; }
-  .hang img { position: relative; width: 100%; height: auto; display: block; filter: contrast(1.05) saturate(.9);
-    -webkit-mask-image: radial-gradient(ellipse 52% 50% at 50% 50%, #000 64%, transparent 100%); mask-image: radial-gradient(ellipse 52% 50% at 50% 50%, #000 64%, transparent 100%); }
-  .sway { animation: sway 7s ease-in-out infinite; transform-origin: 50% -20px; }
-  @keyframes sway { 0%,100% { transform: rotate(-1.6deg); } 50% { transform: rotate(1.6deg); } }
-  @media (prefers-reduced-motion: reduce) { .sway { animation: none; } }
+  /* cover art, framed like a bolted panel */
+  .cover { position: relative; margin: 0; }
+  .cover img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border: 1px solid #000; box-shadow: 0 0 0 4px #1b1915, 0 0 0 5px #000, 10px 10px 0 5px #000; }
+  .cover::before, .cover::after { content: ""; position: absolute; width: 9px; height: 9px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #8a7f72, #3a332c 70%); box-shadow: 0 0 0 1px #000; top: -9px; }
+  .cover::before { left: -9px; }
+  .cover::after { right: -9px; }
 
   /* ---------- segments ---------- */
   section { position: relative; padding: 72px 0; }
@@ -222,9 +223,8 @@
     header.top { padding: 16px 0; }
     nav a:not([href="#install"]):not([href="#faq"]) { display: none; }
     .hero { grid-template-columns: 1fr; padding: 0 0 56px; }
-    .hang { order: -1; max-width: 170px; padding-top: 30px; }
-    .hang .rope { top: -10px; height: 46px; }
-    .sway { transform-origin: 50% -10px; }
+    .hero .cover { width: calc(100% - 8px); margin: 6px 4px 14px; }
+    .hero { gap: 0; }
     h1 { margin-top: 12px; line-height: 1; filter: url(#grit-sm) drop-shadow(0 2px 0 #000); }
     .lede { font-size: 15px; }
     .btn { width: 100%; }
@@ -294,6 +294,8 @@
     <div>
       <div class="tagline">Co-op mod for White Knuckle</div>
       <h1>Don't climb <span class="alone">alone.</span></h1>
+    </div>
+    <div class="hero-copy">
       <p class="lede">Up to 8 climbers in the same superstructure, roped together. One mass rising under all of you, doors that wait for the team, revives at the terminals. Leave someone behind and you'll be the one hanging.</p>
       <div class="cta">
         <a class="btn soon" id="dl-installer" aria-disabled="true">
@@ -304,20 +306,12 @@
       </div>
       <div class="meta" id="dl-meta">The first release, <b>v1.0.0</b>, is on the way. Free &middot; Windows &middot; needs White Knuckle on Steam.</div>
     </div>
-    <div class="hang sway">
-      <svg class="rope" viewBox="0 0 18 160" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
-        <defs>
-          <!-- rope.png is the in-game rope texture (the mod's RopeLook): 8 texels round, 32 along, drawn 2px per texel -->
-          <pattern id="weave" x="5" y="0" width="16" height="64" patternUnits="userSpaceOnUse"><image href="rope.png" width="16" height="64" style="image-rendering: pixelated"/></pattern>
-          <linearGradient id="round" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".45"/><stop offset=".35" stop-color="#000" stop-opacity="0"/><stop offset=".6" stop-color="#fff" stop-opacity=".08"/><stop offset="1" stop-color="#000" stop-opacity=".5"/></linearGradient>
-        </defs>
-        <rect x="5" y="6" width="8" height="136" fill="url(#weave)"/>
-        <rect x="5" y="6" width="8" height="136" fill="url(#round)"/>
-        <rect x="1" y="0" width="16" height="10" rx="2" fill="#5c544a" stroke="#000"/><circle cx="9" cy="5" r="2.2" fill="#a59b8e"/>
-        <path d="M3 142h12v8a6 6 0 0 1-12 0z" fill="none" stroke="#a59b8e" stroke-width="2.5"/>
-      </svg>
-      <img src="climber.png" alt="A Tethered climber hanging from a rope by one hand" width="390" height="590">
-    </div>
+    <figure class="cover">
+      <picture>
+        <source srcset="cover.webp" type="image/webp">
+        <img src="cover.jpg" alt="White Knuckle: Not Alone cover art. One climber hangs from a pipe while a teammate dangles below on the rope." width="1600" height="900" fetchpriority="high">
+      </picture>
+    </figure>
   </div>
 </div>
 
